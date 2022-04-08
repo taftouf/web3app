@@ -23,6 +23,7 @@ const CustomButtonRoot = styled('button')`
   transition: all 150ms ease;
   cursor: pointer;
   border: none;
+  
 
   &:hover {
     background-color: ${blue[600]};
@@ -48,10 +49,11 @@ function CustomButton(props) {
 }
 
 export default function UnstyledButtonsSimple() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
   return (
     <Stack>
-      <CustomButton onClick={()=>{dispatch(connectWallet())}}>Connect Wallet</CustomButton>
+      <CustomButton onClick={async()=>{await dispatch(connectWallet())}}>Connect Wallet</CustomButton>
     </Stack>
   );
 }
