@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import connect from '../../sevices/connection';
+import {_walletconnect} from '../../sevices/connection';
 
-export const connectWallet = createAsyncThunk('', async(_,thunkAPI)=>{
+
+
+export const connection = createAsyncThunk('', async(n,thunkAPI)=>{
   try {
-      const data = await connect();
+      const data = await _walletconnect(n);
       return data;
   } catch (error) {
-      console.log(error);
+      console.log(error.message);
   }
 })
 
@@ -14,39 +16,31 @@ export const connectWallet = createAsyncThunk('', async(_,thunkAPI)=>{
 export const accountSlice = createSlice({
   name: 'account',
   initialState: {
-    address:null, 
-    chainId:"", 
-    balance:"",
-    status:""
+    address:"",
   },
   reducers: {
+    changeAddress: (state, action) => {
+      state.address = action.payload
+    },
     disconnection: state => {
-        state.address   = null;
-        state.balance   = "";
-        state.chainId   = "";
+        console.log("logout");
     }
   },
   extraReducers:{
-    [connectWallet.pending]:(state, action)=>{
-        console.log(action);
-        state.status = "Loading";
+    [connection.pending]:(state, action)=>{
+        state.address = "";
     },
-    [connectWallet.fulfilled]:(state, action)=>{
-       
-        state.status  = action.payload.status;
-        state.balance = action.payload.balance;
+    [connection.fulfilled]:(state, action)=>{
+        console.log(action.payload.address);
         state.address = action.payload.address;
-        state.chainId = action.payload.chainId
     },
-    [connectWallet.rejected]:(state, action)=>{
-        console.log(action);
-        state.status= action.payload.status;
-        state.address= null;
+    [connection.rejected]:(state, action)=>{
+        state.address= "";
     },
-}
+  }
 })
 
-// Action creators are generated for each case reducer function
-export const { connection, disconnection } = accountSlice.actions
+
+export const { disconnection, changeAddress } = accountSlice.actions
 
 export default accountSlice.reducer

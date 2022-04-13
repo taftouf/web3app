@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import ButtonUnstyled, { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 import { styled } from '@mui/system';
 import { useDispatch } from 'react-redux';
-import { connectWallet} from '../features/account/accountSlice'
+import { connect} from '../features/account/accountSlice'
 
 
 const blue = {
@@ -53,7 +53,7 @@ export default function UnstyledButtonsSimple() {
 
   return (
     <Stack>
-      <CustomButton onClick={async()=>{await dispatch(connectWallet())}}>Connect Wallet</CustomButton>
+      <CustomButton onClick={async()=>{await dispatch(connect())}}>Connect Wallet</CustomButton>
     </Stack>
   );
 }

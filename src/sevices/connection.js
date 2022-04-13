@@ -4,34 +4,46 @@ import providerOptions from '../providers';
 
 
 const web3Modal = new Web3Modal({
-    network: "mainnet", // optional
+    // network: "mainnet", // optional
     cacheProvider: true, // optional
+    disableInjectedProvider: true ,
     providerOptions // required
 });
   
-const connect = async()=>{
+export const _walletconnect = async(n)=>{
     try {
         await web3Modal.clearCachedProvider();
-        const instance = await web3Modal.connect();
+        var instance = window.ethereum;
+        if(n === 1)
+        {
+            instance = await web3Modal.connect();
+        }else
+        {
+            await window.ethereum.request({
+                method: "eth_requestAccounts",
+            });
+        }
         const provider = new ethers.providers.Web3Provider(instance);
         const signer = provider.getSigner();
-        const address = await signer.getAddress();
-        const balance = await signer.getBalance();  
-        const chainId = await signer.getChainId();
-        return{
-                status:"", 
-                address:address, 
-                chainId:chainId, 
-                balance:ethers.utils.formatEther(balance)
-            };
-         
+        const addr = await signer.getAddress();
+        return{ address:addr, err:"" };
+        
     } catch (error) {
-        console.log(error);
-        return{
-            status:error,
-            address:""
-        }
+        return { address:"", err:error };
     }
 }
 
-export default connect;
+export const connectMetamask = async()=>{
+    if(window.ethereum)
+    {
+        try {
+            var provider = new ethers.providers.Web3Provider(window.ethereum);
+            const accounts = await provider.listAccounts();
+            return { address:accounts[0], err:"" };
+        } catch (error) {
+            return { address:"", err:error };
+        }
+    }else{
+        return { address:"", err:"install Mesamask" };
+    }
+}
