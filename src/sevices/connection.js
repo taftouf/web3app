@@ -33,17 +33,3 @@ export const _walletconnect = async(n)=>{
     }
 }
 
-export const connectMetamask = async()=>{
-    if(window.ethereum)
-    {
-        try {
-            var provider = new ethers.providers.Web3Provider(window.ethereum);
-            const accounts = await provider.listAccounts();
-            return { address:accounts[0], err:"" };
-        } catch (error) {
-            return { address:"", err:error };
-        }
-    }else{
-        return { address:"", err:"install Mesamask" };
-    }
-}

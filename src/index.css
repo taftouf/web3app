@@ -11,3 +11,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#addressButton {
+  padding: 7px 16px;
+  background-color: white;
+  float:right;
+  border: 2px solid #ffffff ;
+  color:#5f5f61;
+  margin-top: 0px;
+  border-radius: 16px;
+}
+
+#walletButton{
+  padding: 7px 16px;
+  float:right;
+  border: 2px solid #ffffff ;
+  margin-top: 5px;
+  border-radius: 8px;
+  width: 100%;
+}

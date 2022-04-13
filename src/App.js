@@ -10,12 +10,14 @@ import { changeAddress } from "./features/account/accountSlice";
 
 function App() {  
   const dispatch = useDispatch();
-  window.ethereum.on('accountsChanged', async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const accounts = await provider.listAccounts();
-    const address = accounts[0];
-    await dispatch(changeAddress(address))  
-  });
+  if(window.ethereum){
+    window.ethereum.on('accountsChanged', async () => {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const accounts = await provider.listAccounts();
+      const address = accounts[0];
+      await dispatch(changeAddress(address))  
+    });
+  }
   
   return (
     <Routes>

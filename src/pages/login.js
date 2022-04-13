@@ -46,16 +46,30 @@ export const Login = ()=>{
                         Select Wallet
                     </Typography>
                     <Box>
-                        <Button 
-                        sx={{width:"100%",borderRadius:"8px"}}
-                        variant="contained"
-                        onClick={async()=>{await dispatch(connection(1))}}>WalletConnect</Button>
+                        {window.ethereum?
+                            <Button 
+                            id="walletButton"
+                            variant="contained"
+                            onClick={async()=>{await dispatch(connection(0))}}
+                            > Metamask </Button>
+                            :
+                            <Button 
+                            id="walletButton"
+                            variant="contained"
+                            onClick={() => { window.open('https://metamask.io/download.html', '_blank') }}
+                            >
+                                Install Metamask     
+                            </Button>
+                        }
                     </Box>
                     <Box sx={{mt:1}}>
                         <Button
-                         sx={{width:"100%",borderRadius:"8px"}}
-                        variant="contained" 
-                        onClick={async()=>{await dispatch(connection(0))}}>Metamask</Button>
+                         id="walletButton"
+                         variant="contained" 
+                         onClick={async()=>{await dispatch(connection(1))}}
+                        >
+                            WalletConnect
+                        </Button>
                     </Box>
                     
                 </Box>

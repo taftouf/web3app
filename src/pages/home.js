@@ -6,21 +6,43 @@ import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import {Button} from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { useDispatch } from "react-redux";
+import { changeAddress } from "../features/account/accountSlice";
+import { useState } from "react";
 
 const drawerWidth = 240;
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
 
 export const Home = ()=>{
+    const dispatch = useDispatch();
     const address = useSelector((state)=>state.account.address);
+    const [open, setOpen] = useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const Logout = async()=>{
+        await dispatch(changeAddress(""));
+    };
+
+    const handleClose = async() => {
+        // Fix
+        Logout();
+        setOpen(false);
+    };
     return(
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -30,9 +52,30 @@ export const Home = ()=>{
                     XPay
                 </Typography>
                 <Box>
-                    <Button>
-                        {address}
+                    <Button onClick={handleClickOpen} id="addressButton">
+                        {
+                            String(address).substring(0, 6) +
+                            "..." +
+                            String(address).substring(38)
+                        }
                     </Button>
+                    <Dialog
+                        open={open}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleClose}
+                        aria-describedby="alert-dialog-slide-description"
+                    >
+                        <DialogTitle>{"Identity"}</DialogTitle>
+                        <DialogContent>
+                        <DialogContentText sx={{border:"1px solid #000"}} id="alert-dialog-slide-description">
+                            {address}
+                        </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                        <Button startIcon={<LogoutIcon />} onClick={handleClose}>Log Out</Button>
+                        </DialogActions>
+                    </Dialog>
                 </Box>
                 </Toolbar>
             </AppBar>
