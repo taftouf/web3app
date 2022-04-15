@@ -10,10 +10,10 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 300,
+    width: 500,
     bgcolor: 'background.paper',
-    border: '1px solid #000',
-    borderRadius: '8px',
+    border: '0px',
+    borderRadius: '0px',
     boxShadow: 24,
     p: 1,
   };
@@ -42,18 +42,20 @@ export const Login = ()=>{
             aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                    {/* <Typography id="modal-modal-title" variant="h6" component="h2">
                         Select Wallet
-                    </Typography>
+                    </Typography> */}
                     <Box>
                         {window.ethereum?
-                            <Button 
+                            <Button
+                            sx={{bgcolor:"white", color:"black"}}
                             id="walletButton"
                             variant="contained"
                             onClick={async()=>{await dispatch(connection(0))}}
                             > Metamask </Button>
                             :
                             <Button 
+                            sx={{bgcolor:"white", color:"black"}}
                             id="walletButton"
                             variant="contained"
                             onClick={() => { window.open('https://metamask.io/download.html', '_blank') }}
@@ -62,8 +64,9 @@ export const Login = ()=>{
                             </Button>
                         }
                     </Box>
-                    <Box sx={{mt:1}}>
+                    <Box>
                         <Button
+                        sx={{bgcolor:"white", color:"black"}}
                          id="walletButton"
                          variant="contained" 
                          onClick={async()=>{await dispatch(connection(1))}}

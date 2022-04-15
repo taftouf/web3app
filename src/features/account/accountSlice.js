@@ -31,7 +31,6 @@ export const accountSlice = createSlice({
         state.address = "";
     },
     [connection.fulfilled]:(state, action)=>{
-        console.log(action.payload.address);
         state.address = action.payload.address;
     },
     [connection.rejected]:(state, action)=>{
