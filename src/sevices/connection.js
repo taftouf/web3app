@@ -1,35 +1,20 @@
-import { ethers } from 'ethers';
-import Web3Modal from "web3modal";
-import providerOptions from '../providers';
 
+let currentAccount = "";
 
-const web3Modal = new Web3Modal({
-    // network: "mainnet", // optional
-    cacheProvider: true, // optional
-    disableInjectedProvider: true ,
-    providerOptions // required
-});
-  
-export const _walletconnect = async(n)=>{
-    try {
-        await web3Modal.clearCachedProvider();
-        var instance = window.ethereum;
-        if(n === 1)
-        {
-            instance = await web3Modal.connect();
-        }else
-        {
-            await window.ethereum.request({
-                method: "eth_requestAccounts",
-            });
+export const Metamaskconnect=async()=>{
+    await window.ethereum
+      .request({ method: 'eth_requestAccounts' })
+      .then(handleAccountsChanged)
+      .catch((err) => {
+        if (err.code === 4001) {
+          console.log('the user rejected the connection request');
+        } else {
+          console.error(err);
         }
-        const provider = new ethers.providers.Web3Provider(instance);
-        const signer = provider.getSigner();
-        const addr = await signer.getAddress();
-        return{ address:addr, err:"" };
-        
-    } catch (error) {
-        return { address:"", err:error };
-    }
-}
+      });
+      return{ address:currentAccount, wallet:0 };
+  }
 
+function handleAccountsChanged(accounts) {
+    currentAccount = accounts[0];
+  }

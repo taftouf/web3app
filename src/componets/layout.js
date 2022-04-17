@@ -15,7 +15,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { useDispatch } from "react-redux";
-import { changeAddress } from "../features/account/accountSlice";
+import { changeAddress, changeWallet } from "../features/account/accountSlice";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { theme } from "./theme";
@@ -115,7 +115,7 @@ export const Layout = ()=>{
                         </DialogContentText>
                         </DialogContent>
                         <DialogActions>
-                        <Button startIcon={<LogoutIcon />} onClick={async()=>{setOpen(false);await dispatch(changeAddress(""));}}>Log Out</Button>
+                        <Button startIcon={<LogoutIcon />} onClick={async()=>{setOpen(false);await dispatch(changeAddress(""));await dispatch(changeWallet(""));}}>Log Out</Button>
                         </DialogActions>
                     </Dialog>
                 </Box>
