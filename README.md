@@ -14,4 +14,4 @@ Cryptocurrency Payment Gateway is a dynamic payment processing infrastructure th
 > nvm use v16.13.0
 
 * start the dev server
-> npm start
+> npm install && npm start
