@@ -44,7 +44,7 @@ export const Login = ()=>{
       console.log(connector.accounts[0]);
       await dispatch(changeAddress(connector.accounts[0]));
       await dispatch(changeWallet(1));
-      navigate("home");    
+      navigate("home");   
     });
 
     const _walletConnect = async()=>{
@@ -68,6 +68,10 @@ export const Login = ()=>{
         await dispatch(changeWallet(1));
         navigate("home");
       }
+    }
+
+    const _meta = async()=>{
+      dispatch(connection());
     }
 
 
@@ -97,7 +101,7 @@ export const Login = ()=>{
                             sx={{bgcolor:"white", color:"black"}}
                             id="walletButton"
                             variant="contained"
-                            onClick={async()=>{await dispatch(connection())}}
+                            onClick={()=>_meta()}
                             > Metamask </Button>
                             :
                             <Button 

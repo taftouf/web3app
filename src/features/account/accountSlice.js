@@ -4,7 +4,6 @@ import { Metamaskconnect } from '../../sevices/connection';
 export const connection = createAsyncThunk('', async(_,thunkAPI)=>{
   try {
       const data = await Metamaskconnect();
-      console.log(data);
       return data;
   } catch (error) {
       console.log(error.message);
@@ -15,7 +14,9 @@ export const accountSlice = createSlice({
   name: 'account',
   initialState: {
     address:"",
-    wallet:""
+    wallet:"",
+    access_token:"",
+    token_type:""
   },
   reducers: {
     changeAddress: (state, action) => {
@@ -35,8 +36,11 @@ export const accountSlice = createSlice({
         state.wallet = "";
     },
     [connection.fulfilled]:(state, action)=>{
+      console.log(action);
         state.address = action.payload.address;
         state.wallet  = action.payload.wallet;
+        state.access_token =  action.payload.access_token;
+        state.token_type = action.payload.token_type;
     },
     [connection.rejected]:(state, action)=>{
         state.address= "";

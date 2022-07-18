@@ -2,6 +2,7 @@ import * as React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { Home } from "./pages/home";
 import { Login } from "./pages/login";
+import { IntegrationDetails } from "./pages/integrationDetails"
 import Private from "./middlewares/private";
 import Public from "./middlewares/public";
 import { useDispatch } from "react-redux";
@@ -47,6 +48,7 @@ function App() {
         <Route path="home" element={ <Private> <Home /> </Private>} />
         <Route path="payments" element={ <Private> <Payments /> </Private>} />
         <Route path="integrations" element={ <Private> <Integrations /> </Private>} />
+        <Route path="integration" element={ <Private> <IntegrationDetails /> </Private>} />
       </Route>
       
     </Routes>
