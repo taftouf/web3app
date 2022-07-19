@@ -14,7 +14,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from '@mui/material/TextField';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from "react-redux"
+import { useSelector } from "react-redux";
+import { Pagination } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -73,7 +74,8 @@ export const Integrations=()=>{
     const [open, setOpen] = useState(false);
     const [integrations, setIntegrations] = useState([]);
     const navigate = useNavigate();
-
+    const [page, setPage] = useState(1);
+    const [nombrePage, setNombrePage] = useState(0);
     const getIntegration = async()=>{
         const requestOptions = {
             method: 'GET',
@@ -84,24 +86,37 @@ export const Integrations=()=>{
                 'owner': address
             },
         };
-        await fetch('http://127.0.0.1:8000/api/integrations', requestOptions)
+        await fetch('http://127.0.0.1:8000/api/integrations?page='+page, requestOptions)
         .then(response => response.json())
-        .then(data => setIntegrations(data));
+        .then(data => {setIntegrations(data); setNombrePage(data['integration'].last_page)});
     }
 
     useEffect(()=>{
         getIntegration();  
-    },[])
+    },[page])
    
     const integrationDetails = (integration)=>{
         navigate('/integration',{state:{integration}});
     }
-    const AddIntegration= () => {
-        console.log(name);
+    const AddIntegration= async() => {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' ,
+                'Accept': 'application/json',
+                'Authorization': token,
+            },
+            body: JSON.stringify({ 
+                owner: address,
+                name: name })
+        };
+        await fetch('http://127.0.0.1:8000/api/integrations', requestOptions)
+        .then(response => response.json())
+        .then(data => setIntegrations(data));
     }
     return (
         <>
-            <Card sx={{ minWidth: 275 , background: '#ecf2f8'}}>
+            <Card elevation={4} sx={{ minWidth: 275 , background: '#ecf2f8'}}>
                 <CardContent>
                     <Button
                         variant="contained"
@@ -119,35 +134,50 @@ export const Integrations=()=>{
             </Card>
 
             {/* liste of Integrations */}
-            <Card sx={{ minWidth: 275 , background: '#ecf2f8', mt: 2}}>
+            <Card elevation={4} sx={{ minWidth: 275 , background: '#ecf2f8', mt: 2}}>
                 <CardContent>
-                    {integrations['integration']?.map((integration,i) => (
+                    {integrations['integration'] === undefined ?
+                    (<div> </div>)
+                    :
+                    integrations['integration'].data?.map((integration,i) => (
                             <button 
-                                key={i}
-                                variant="contained"
-                                onClick={()=>integrationDetails(integration)}
-                                className={classes.buttonIntegration}
-                            >
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    p: 1,
-                                    m: 1,
-                                    bgcolor: 'background.paper',
-                                    borderRadius: 1,
-                                }}
-                            >
-                                {integration.name}
-                                
-                            </Box>
+                                    key={i}
+                                    variant="contained"
+                                    onClick={()=>integrationDetails(integration)}
+                                    className={classes.buttonIntegration}
+                                >
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        p: 1,
+                                        m: 1,
+                                        bgcolor: 'background.paper',
+                                        borderRadius: 1,
+                                    }}
+                                >
+                                    {integration.name}
+                                    
+                                </Box>
                             </button>
-                    ))}
+                    ))
+                    }
+                     
                 </CardContent>
-                <CardActions>
-                    
-                </CardActions>
             </Card>
+
+            {/* pagination */}
+            <Card elevation={4} sx={{ minWidth: 275 , background: '#ecf2f8', mt: 2}}>
+                <CardContent>
+                    {nombrePage > 1 ?
+                        (<Pagination count={nombrePage} onChange={(e, value) => {setPage(value)}} />)
+                    :
+                        (<div></div>)
+                    }
+                </CardContent>
+            </Card>
+            
+            
             <Dialog 
                 open={open} 
                 onClose={()=> setOpen(false)} 
