@@ -76,6 +76,7 @@ export const Integrations=()=>{
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [nombrePage, setNombrePage] = useState(0);
+  
     const getIntegration = async()=>{
         const requestOptions = {
             method: 'GET',
@@ -88,7 +89,7 @@ export const Integrations=()=>{
         };
         await fetch('http://127.0.0.1:8000/api/integrations?page='+page, requestOptions)
         .then(response => response.json())
-        .then(data => {setIntegrations(data); setNombrePage(data['integration'].last_page)});
+        .then(data => {setIntegrations(data); setNombrePage(data['integration']?.last_page)});
     }
 
     useEffect(()=>{
@@ -150,14 +151,33 @@ export const Integrations=()=>{
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'row',
-                                        p: 1,
-                                        m: 1,
+                                        pl: 1,
+                                        ml: 1,
                                         bgcolor: 'background.paper',
                                         borderRadius: 1,
                                     }}
                                 >
-                                    {integration.name}
+                                   <pre>{integration.name}</pre> 
                                     
+                                </Box>
+                                <Box 
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        pl: 1,
+                                        ml: 1,
+                                        bgcolor: 'background.paper',
+                                        borderRadius: 1,
+                                        fontWeight: 'lighter',
+                                        color: '#a8a8a8'
+                                    }}>
+                                    <pre>Payment Widget To 
+                                        {
+                                            " "+String(integration.receiver).substring(0, 6) +
+                                            "..." +
+                                            String(integration.receiver).substring(38)
+                                        }
+                                    </pre>
                                 </Box>
                             </button>
                     ))
@@ -167,17 +187,13 @@ export const Integrations=()=>{
             </Card>
 
             {/* pagination */}
+            {nombrePage > 1 &&(
             <Card elevation={4} sx={{ minWidth: 275 , background: '#ecf2f8', mt: 2}}>
                 <CardContent>
-                    {nombrePage > 1 ?
-                        (<Pagination count={nombrePage} onChange={(e, value) => {setPage(value)}} />)
-                    :
-                        (<div></div>)
-                    }
+                    <Pagination count={nombrePage} onChange={(e, value) => {setPage(value)}} />
                 </CardContent>
-            </Card>
-            
-            
+            </Card>)
+            }
             <Dialog 
                 open={open} 
                 onClose={()=> setOpen(false)} 
