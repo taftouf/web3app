@@ -19,9 +19,11 @@ import { changeAddress, changeWallet } from "../features/account/accountSlice";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { theme } from "./theme";
+
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBarListItem from "./sideBarListItem";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+
 
 const drawerWidth = 240;
 
@@ -137,7 +139,7 @@ export const Layout = ()=>{
                     <SideBarListItem />
                 </Box>
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 3}}>
                 <Toolbar />
                 <Outlet />
             </Box>

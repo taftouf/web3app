@@ -16,6 +16,9 @@ import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import { Pagination } from "@mui/material";
+import Grid from '@mui/material/Grid';
+import { theme } from '../componets/theme';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -24,7 +27,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const useStyles = makeStyles(theme => ({
     button: {
       margin: theme.spacing(1),
-      background: 'linear-gradient(45deg, #dbdbdb 30%, #b5b3b3 90%)',
+      background: 'linear-gradient(45deg, #b5b3b3 30%, #dbdbdb 90%)',
       color: 'black',
       [theme.breakpoints.down("sm")]: {
         minWidth: 32,
@@ -51,7 +54,7 @@ const useStyles = makeStyles(theme => ({
     },
     buttonIntegration : {
         margin: theme.spacing(1),
-        background: 'linear-gradient(45deg, #dbdbdb 30%, #b5b3b3 90%)',
+        background: 'linear-gradient(45deg, #b5b3b3 40%, #dbdbdb 90%)',
         color: 'black',
         padding: 8,
         width: '100%',
@@ -67,6 +70,7 @@ const useStyles = makeStyles(theme => ({
   }));
 
 export const Integrations=()=>{
+    const isSmall = useMediaQuery(theme.breakpoints.down('md'));
     const classes = useStyles();
     const address = useSelector((state)=>state.account.address);
     const token = useSelector((state)=>state.account.token_type)+" "+useSelector((state)=>state.account.access_token);
@@ -89,11 +93,15 @@ export const Integrations=()=>{
         };
         await fetch('http://127.0.0.1:8000/api/integrations?page='+page, requestOptions)
         .then(response => response.json())
-        .then(data => {setIntegrations(data); setNombrePage(data['integration']?.last_page)});
+        .then(data => {setIntegrations(data); setNombrePage(data['integration']?.last_page)})
+        .catch(err => {
+            console.log("error");
+        });
     }
 
     useEffect(()=>{
-        getIntegration();  
+        getIntegration(); 
+        console.log(integrations); 
     },[page])
    
     const integrationDetails = (integration)=>{
@@ -113,7 +121,10 @@ export const Integrations=()=>{
         };
         await fetch('http://127.0.0.1:8000/api/integrations', requestOptions)
         .then(response => response.json())
-        .then(data => setIntegrations(data));
+        .then(data => setIntegrations(data))
+        .catch(err => {
+            console.log("error");
+        });
     }
     return (
         <>
@@ -137,52 +148,57 @@ export const Integrations=()=>{
             {/* liste of Integrations */}
             <Card elevation={4} sx={{ minWidth: 275 , background: '#ecf2f8', mt: 2}}>
                 <CardContent>
-                    {integrations['integration'] === undefined ?
-                    (<div> </div>)
-                    :
-                    integrations['integration'].data?.map((integration,i) => (
-                            <button 
-                                    key={i}
-                                    variant="contained"
-                                    onClick={()=>integrationDetails(integration)}
-                                    className={classes.buttonIntegration}
-                                >
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        pl: 1,
-                                        ml: 1,
-                                        bgcolor: 'background.paper',
-                                        borderRadius: 1,
-                                    }}
-                                >
-                                   <pre>{integration.name}</pre> 
-                                    
-                                </Box>
-                                <Box 
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        pl: 1,
-                                        ml: 1,
-                                        bgcolor: 'background.paper',
-                                        borderRadius: 1,
-                                        fontWeight: 'lighter',
-                                        color: '#a8a8a8'
-                                    }}>
-                                    <pre>Payment Widget To 
-                                        {
-                                            " "+String(integration.receiver).substring(0, 6) +
-                                            "..." +
-                                            String(integration.receiver).substring(38)
-                                        }
-                                    </pre>
-                                </Box>
-                            </button>
-                    ))
-                    }
-                     
+                    <Box sx={{ flexGrow: 1 }}>
+                        <Grid container spacing={2}>
+                        {integrations['integration'] === undefined ?
+                        (<div> </div>)
+                        :
+                        integrations['integration'].data?.map((integration,i) => (
+                                    <Grid item xs={isSmall ? 12 : 6}>
+                                        <button 
+                                            key={i}
+                                            variant="contained"
+                                            onClick={()=>integrationDetails(integration)}
+                                            className={classes.buttonIntegration}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    pl: 1,
+                                                    ml: 1,
+                                                    bgcolor: 'background.paper',
+                                                    borderRadius: 1,
+                                                }}
+                                            >
+                                            <pre>{integration.name}</pre> 
+                                                
+                                            </Box>
+                                            <Box 
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    pl: 1,
+                                                    ml: 1,
+                                                    bgcolor: 'background.paper',
+                                                    borderRadius: 1,
+                                                    fontWeight: 'lighter',
+                                                    color: '#dbdbdb'
+                                                }}>
+                                                <span>Payment Widget To 
+                                                    {
+                                                        " "+String(integration.receiver).substring(0, 6) +
+                                                        "..." +
+                                                        String(integration.receiver).substring(38)
+                                                    }
+                                                </span>
+                                            </Box>
+                                        </button>
+                                    </Grid>
+                        ))
+                        }
+                        </Grid>
+                    </Box>
                 </CardContent>
             </Card>
 
@@ -196,6 +212,7 @@ export const Integrations=()=>{
             }
             <Dialog 
                 open={open} 
+                TransitionComponent={Transition}
                 onClose={()=> setOpen(false)} 
                 PaperProps={{
                     sx: {
