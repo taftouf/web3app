@@ -60,7 +60,7 @@ export const Layout = ()=>{
     );
 
     return(
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', height:"100%" }}>
             <CssBaseline />
             <AppBar 
                 position="fixed" 
@@ -69,11 +69,11 @@ export const Layout = ()=>{
                         zIndex: (theme) => theme.zIndex.drawer + 1 ,
                     },
                     background: '#ecf2f8',
-                    color:'black'
+                    color:'#434343'
                 }}>
                 <Toolbar>
-                <Typography variant="h6" noWrap component="div" style={{ flex: 1 }}>
-                    XPay
+                <Typography variant="h6" noWrap component="div" style={{ flex: 1,fontWeight: 'bold' }}>
+                    Abierto
                 </Typography>
                 <Box>
                     <React.Fragment>
@@ -128,18 +128,18 @@ export const Layout = ()=>{
                 sx={{
                     width: drawerWidth,
                     flexShrink: 0,
-                    [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box', border:0,  background: '#ecf2f8' },
+                    [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box', border:0,  background: 'white', color: '#404040' },
                     [theme.breakpoints.down('md')]: {
                         display: 'none',
                     },
                 }}
             >
                 <Toolbar />
-                <Box sx={{ overflow: 'auto', mt:4, ml:2}}>
+                <Box sx={{mb:4, mt:4, ml:2}}>
                     <SideBarListItem />
                 </Box>
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3}}>
+            <Box component="main" sx={{ flexGrow: 1, p: 3, height:"100%",background:"#ecf2f8"}}>
                 <Toolbar />
                 <Outlet />
             </Box>

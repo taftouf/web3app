@@ -19,6 +19,12 @@ import { Pagination } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import { theme } from '../componets/theme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { DataGrid } from '@mui/x-data-grid';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import { IconButton} from '@mui/material';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import Snackbar from '@mui/material/Snackbar';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -78,9 +84,80 @@ export const Integrations=()=>{
     const [open, setOpen] = useState(false);
     const [integrations, setIntegrations] = useState([]);
     const navigate = useNavigate();
-    const [page, setPage] = useState(1);
-    const [nombrePage, setNombrePage] = useState(0);
-  
+    const [rows, setRow] = useState([]);
+    const [selectionModel, setSelectionModel] = useState([]);
+    const [del, setDel] = useState(false);
+    const [openDel, setOpenDel] = useState(false);
+    const [openAdd, setOpenAdd] = useState(false);
+    const [openUpdate, setOpenUpdate] = useState(false);
+    const [openDelete, setopenDelete] = useState(false);
+
+
+    const columns = [
+        {field: "id", hide: true},
+        {
+            field: 'key',
+            headerName: 'Key',
+            flex: 1
+        },
+        { 
+            field: 'name',
+            headerName: 'Name',
+            editable: true,
+            flex: 1
+        },
+    
+        {
+            field: 'receiver',
+            headerName: 'Receiver',
+            editable: true,
+            flex: 1
+        },
+        {
+            field: "delete",
+            width: 10,
+            sortable: false,
+            disableColumnMenu: true,
+            renderHeader: () => {
+                return (
+                <IconButton
+                    onClick={async() => {
+                    setOpenDel(true);
+                    }}
+                >
+                    <DeleteOutlinedIcon />
+                </IconButton>
+                );
+            }
+        }
+      ];
+
+      const deleteIntegration = async() =>{
+        if(del){
+            const selectedIDs = new Set(selectionModel);
+            selectedIDs.forEach( async id => {
+                const requestOptions = {
+                    method: 'delete',
+                    headers: { 
+                        'Content-Type': 'application/json' ,
+                        'Accept': 'application/json',
+                        'Authorization': token,
+                        '_id': id
+                    }
+                };
+                await fetch('http://127.0.0.1:8000/api/integration/'+id+'/delete', requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    setRow((r) => r.filter((x) => !selectedIDs.has(x.id)));
+                    setopenDelete(true);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+            }) 
+        }
+      }
+      
     const getIntegration = async()=>{
         const requestOptions = {
             method: 'GET',
@@ -91,22 +168,26 @@ export const Integrations=()=>{
                 'owner': address
             },
         };
-        await fetch('http://127.0.0.1:8000/api/integrations?page='+page, requestOptions)
+        await fetch('http://127.0.0.1:8000/api/integrations', requestOptions)
         .then(response => response.json())
-        .then(data => {setIntegrations(data); setNombrePage(data['integration']?.last_page)})
+        .then(data => {
+            data['integration'].map((integration,i)=>{
+                setRow(rows => [...rows, { id :integration._id.$oid ,key:integration?.key, name: integration.name, receiver: integration.receiver }]);
+            });
+        })
         .catch(err => {
-            console.log("error");
+            console.log("error test");
         });
     }
 
     useEffect(()=>{
-        getIntegration(); 
-        console.log(integrations); 
-    },[page])
+        deleteIntegration();
+    }, [del]);
+
+    useEffect(()=>{
+        getIntegration();
+    },[])
    
-    const integrationDetails = (integration)=>{
-        navigate('/integration',{state:{integration}});
-    }
     const AddIntegration= async() => {
         const requestOptions = {
             method: 'POST',
@@ -121,14 +202,101 @@ export const Integrations=()=>{
         };
         await fetch('http://127.0.0.1:8000/api/integrations', requestOptions)
         .then(response => response.json())
-        .then(data => setIntegrations(data))
+        .then(data => {
+            setRow([]);
+            data['integration'].map((integration,i)=>{
+                setRow(rows => [...rows, { id :integration._id.$oid ,key:integration?.key, name: integration.name, receiver: integration.receiver }]);
+            });
+            setOpenAdd(true);
+        })
         .catch(err => {
-            console.log("error");
+            console.log(err);
         });
+        
     }
+
+    const processRowUpdate = async(newRow) => {
+        const updatedRow = { ...newRow, isNew: false };
+        const requestOptions = {
+            method: 'get',
+            headers: { 
+                'Content-Type': 'application/json' ,
+                'Accept': 'application/json',
+                'Authorization': token,
+                'receiver': updatedRow.receiver,
+                'name': updatedRow.name,
+                '_id': updatedRow.id
+            }
+        };
+        await fetch('http://127.0.0.1:8000/api/integration/'+updatedRow.id+'/update', requestOptions)
+        .then(response => response.json())
+        .then(data => setOpenUpdate(true))
+        .catch(err => console.log(err));
+    };
+    const onProcessRowUpdateError=()=>{
+        console.log("")
+    }
+
+    const actionAdd = (
+        <React.Fragment>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={(event, reason) => {
+                if (reason === 'clickaway') {
+                return;
+                }
+        
+                setOpenAdd(false);
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </React.Fragment>
+      );
+
+      const actionUpdate = (
+        <React.Fragment>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={(event, reason) => {
+                if (reason === 'clickaway') {
+                return;
+                }
+        
+                setOpenUpdate(false);
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </React.Fragment>
+      );
+
+      const actionDelete = (
+        <React.Fragment>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={(event, reason) => {
+                if (reason === 'clickaway') {
+                return;
+                }
+        
+                setopenDelete(false);
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </React.Fragment>
+      );
+
     return (
         <>
-            <Card elevation={4} sx={{ minWidth: 275 , background: '#ecf2f8'}}>
+            <Card elevation={4} sx={{ minWidth: 275 , background: 'white'}}>
                 <CardContent>
                     <Button
                         variant="contained"
@@ -140,76 +308,8 @@ export const Integrations=()=>{
                     </Button>
 
                 </CardContent>
-                <CardActions>
-                    
-                </CardActions>
             </Card>
 
-            {/* liste of Integrations */}
-            <Card elevation={4} sx={{ minWidth: 275 , background: '#ecf2f8', mt: 2}}>
-                <CardContent>
-                    <Box sx={{ flexGrow: 1 }}>
-                        <Grid container spacing={2}>
-                        {integrations['integration'] === undefined ?
-                        (<div> </div>)
-                        :
-                        integrations['integration'].data?.map((integration,i) => (
-                                    <Grid item xs={isSmall ? 12 : 6}>
-                                        <button 
-                                            key={i}
-                                            variant="contained"
-                                            onClick={()=>integrationDetails(integration)}
-                                            className={classes.buttonIntegration}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    display: 'flex',
-                                                    flexDirection: 'row',
-                                                    pl: 1,
-                                                    ml: 1,
-                                                    bgcolor: 'background.paper',
-                                                    borderRadius: 1,
-                                                }}
-                                            >
-                                            <pre>{integration.name}</pre> 
-                                                
-                                            </Box>
-                                            <Box 
-                                                sx={{
-                                                    display: 'flex',
-                                                    flexDirection: 'row',
-                                                    pl: 1,
-                                                    ml: 1,
-                                                    bgcolor: 'background.paper',
-                                                    borderRadius: 1,
-                                                    fontWeight: 'lighter',
-                                                    color: '#dbdbdb'
-                                                }}>
-                                                <span>Payment Widget To 
-                                                    {
-                                                        " "+String(integration.receiver).substring(0, 6) +
-                                                        "..." +
-                                                        String(integration.receiver).substring(38)
-                                                    }
-                                                </span>
-                                            </Box>
-                                        </button>
-                                    </Grid>
-                        ))
-                        }
-                        </Grid>
-                    </Box>
-                </CardContent>
-            </Card>
-
-            {/* pagination */}
-            {nombrePage > 1 &&(
-            <Card elevation={4} sx={{ minWidth: 275 , background: '#ecf2f8', mt: 2}}>
-                <CardContent>
-                    <Pagination count={nombrePage} onChange={(e, value) => {setPage(value)}} />
-                </CardContent>
-            </Card>)
-            }
             <Dialog 
                 open={open} 
                 TransitionComponent={Transition}
@@ -240,6 +340,94 @@ export const Integrations=()=>{
                 <Button startIcon={<AddCircleIcon />} onClick={async()=>{AddIntegration();setOpen(false)}}>Add</Button>
                 </DialogActions>
             </Dialog>
+
+            <Dialog 
+                open={openDel} 
+                TransitionComponent={Transition}
+                onClose={()=> setOpen(false)} 
+                PaperProps={{
+                    sx: {
+                        width: "50%",
+                        maxHeight: 300
+                    }
+                }
+            }>
+                <DialogTitle>Delete {selectionModel.length} Integrations</DialogTitle>
+                <DialogActions>
+                    <Button startIcon={<DeleteOutlinedIcon />} onClick={async()=>{setDel(true); setOpenDel(false)}}>Delete</Button>
+                    <Button startIcon={<CancelOutlinedIcon />} onClick={async()=>{setDel(false); setOpenDel(false)}}>cancel</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Card elevation={4} sx={{background:'white', mt:2}}>
+                <CardContent>
+                    <Box sx={{ height: 371, width: '100%'}}>
+                        <DataGrid
+                            editMode="row"
+                            onProcessRowUpdateError={onProcessRowUpdateError}
+                            processRowUpdate={processRowUpdate}
+                            experimentalFeatures={{ newEditingApi: true }}
+                            rows={rows}
+                            columns={columns}
+                            pageSize={5}
+                            rowsPerPageOptions={[3]}
+                            checkboxSelection
+                            onSelectionModelChange={(ids) => {
+                                setSelectionModel(ids);
+                              }}
+                        />
+                    </Box>
+                </CardContent>
+            </Card>
+
+            <Snackbar
+                open={openUpdate}
+                autoHideDuration={6000}
+                onClose={
+                    (event, reason) => {
+                        if (reason === 'clickaway') {
+                        return;
+                        }
+                
+                        setOpenUpdate(false);
+                    }
+                }
+                message="Integration Updated successfuly"
+                action={actionUpdate}
+            />
+
+            <Snackbar
+                open={openAdd}
+                autoHideDuration={6000}
+                onClose={
+                    (event, reason) => {
+                        if (reason === 'clickaway') {
+                        return;
+                        }
+                
+                        setOpenAdd(false);
+                    }
+                }
+                message="Integration Added successfuly"
+                action={actionAdd}
+            />
+
+            <Snackbar
+                open={openDelete}
+                autoHideDuration={6000}
+                onClose={
+                    (event, reason) => {
+                        if (reason === 'clickaway') {
+                        return;
+                        }
+                
+                        setopenDelete(false);
+                    }
+                }
+                message="Integration deleted successfuly"
+                action={actionDelete}
+            />
+
         </>
     )
 }
