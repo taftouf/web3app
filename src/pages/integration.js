@@ -171,6 +171,7 @@ export const Integrations=()=>{
         await fetch('http://127.0.0.1:8000/api/integrations', requestOptions)
         .then(response => response.json())
         .then(data => {
+            console.log(token);
             data['integration'].map((integration,i)=>{
                 setRow(rows => [...rows, { id :integration._id.$oid ,key:integration?.key, name: integration.name, receiver: integration.receiver }]);
             });
