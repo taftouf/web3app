@@ -33,7 +33,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const useStyles = makeStyles(theme => ({
     button: {
       margin: theme.spacing(1),
-      background: 'linear-gradient(45deg, #b5b3b3 30%, #dbdbdb 90%)',
+      background: '#86E4F7',
       color: 'black',
       [theme.breakpoints.down("sm")]: {
         minWidth: 32,

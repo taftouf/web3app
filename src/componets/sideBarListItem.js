@@ -32,32 +32,26 @@ const SideBarListItem = ()=>{
             <ListItem 
                 className='li'
                 button 
-                sx={{mt:2, '&:hover':{background: "#ecf2f8", color: 'black'},  borderBottomLeftRadius: 8,borderTopLeftRadius:8, ...(active.overview&&{background:'#ecf2f8', color:'black'})}}
+                sx={{mt:2, '&:hover':{background: "#E6F9FD", color: 'black'},  borderBottomLeftRadius: 8,borderTopLeftRadius:8, ...(active.overview&&{color:'#0da6f0'})}}
                 onClick={()=>{navigate('home');changeState("overview")}}
                 >
-                <b className={active.overview?'active outsid':"outsid"}></b>
-                <b className={active.overview?'active outsid':"outsid"}></b>
                 <DashboardIcon sx={{ml:2}} />
                 <ListItemText sx={{ml:2}}>Overview</ListItemText>
             </ListItem>
             <ListItem 
                 className='li'
                 button 
-                sx={{mt:2, '&:hover':{background: "#ecf2f8", color: 'black'}, borderBottomLeftRadius: 8,borderTopLeftRadius:8, ...(active.payments&&{background:'#ecf2f8', color:'black'})}}
+                sx={{mt:2, '&:hover':{background: "#E6F9FD", color: 'black'},  borderBottomLeftRadius: 8,borderTopLeftRadius:8, ...(active.payments&&{color:'#0da6f0'})}}
                 onClick={()=>{navigate('payments');changeState("payments")}}
             >
-                <b className={active.payments?'active outsid':"outsid"}></b>
-                <b className={active.payments?'active outsid':"outsid"}></b>
                 <PaymentsIcon sx={{ml:2}}/>
                 <ListItemText sx={{ml:2}}>Payments</ListItemText>
             </ListItem>
             <ListItem 
                 className='li'
                 button 
-                sx={{mt:2, '&:hover':{background: "#ecf2f8", color: 'black'}, borderBottomLeftRadius: 8,borderTopLeftRadius:8, ...(active.integrations&&{background:'#ecf2f8', color:'black'})}}
+                sx={{mt:2, '&:hover':{background: "#E6F9FD", color: 'black'},  borderBottomLeftRadius: 8,borderTopLeftRadius:8, ...(active.integrations&&{color:'#0da6f0'})}}
                 onClick={()=>{navigate('integrations');changeState("integrations")}}>
-                <b className={active.integrations?'active outsid':"outsid"}></b>
-                <b className={active.integrations?'active outsid':"outsid"}></b>
                 <ExtensionIcon sx={{ml:2}}/>
                 <ListItemText sx={{ml:2}}>Integrations</ListItemText>
             </ListItem>

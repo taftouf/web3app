@@ -68,7 +68,7 @@ export const Layout = ()=>{
                     [theme.breakpoints.up('md')]: {
                         zIndex: (theme) => theme.zIndex.drawer + 1 ,
                     },
-                    background: '#ecf2f8',
+                    background: 'linear-gradient(45deg, #0da6f0 30%, #86E4F7 100%)',
                     color:'#434343'
                 }}>
                 <Toolbar>
@@ -139,7 +139,7 @@ export const Layout = ()=>{
                     <SideBarListItem />
                 </Box>
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3, height:"100%",background:"#ecf2f8"}}>
+            <Box component="main" sx={{ flexGrow: 1, p: 3, height:"100%",background: '#E6F9FD'}}>
                 <Toolbar />
                 <Outlet />
             </Box>
