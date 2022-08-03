@@ -1,0 +1,20 @@
+.main {
+    display: grid;
+    background: var(--glass);
+    border-radius: 2rem;
+    gap: 16px;
+    grid-template-columns:auto 20rem;
+    overflow: hidden;
+  }
+
+  .riegth{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.left{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
