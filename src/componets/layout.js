@@ -139,7 +139,7 @@ export const Layout = ()=>{
                     <SideBarListItem />
                 </Box>
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3, height:"100%",background: '#E6F9FD'}}>
+            <Box component="main" sx={{ flexGrow: 1, p: 3,  height: '100%' ,display: 'block',overflow: 'auto',background: '#E6F9FD'}}>
                 <Toolbar />
                 <Outlet />
             </Box>

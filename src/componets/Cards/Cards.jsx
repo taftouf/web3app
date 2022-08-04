@@ -1,67 +1,79 @@
 import React from 'react';
 import './Cards.css';
 import Card from '../Card/Card';
+import Grid from '@mui/material/Grid';
+import { theme } from '../../componets/theme';
+import { useEffect, useState } from 'react';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useSelector } from "react-redux";
+
+
 
 export const Cards = () => {
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+  const [tokens, setTokens] = useState([]);
+  const address = useSelector((state)=>state.account.address);
+  const token = useSelector((state)=>state.account.token_type)+" "+useSelector((state)=>state.account.access_token);
+  const [cardsData, setCardsData] = useState([]);
+  const getTokens = async()=>{
+      const requestOptions = {
+        method: 'GET',
+        headers: { 
+            'Content-Type': 'application/json' ,
+            'Accept': 'application/json',
+            'Authorization': token,
+            'owner': address
+        },
+    };
+    await fetch('http://127.0.0.1:8000/api/tokenIn/owner', requestOptions)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        setTokens(data['token']);
+    })
+    .catch(err => {
+        console.log("error test");
+    });
+    }
 
-  
-    const cardsData = [
-        {
-          title: "Sales",
-          color: {
-            backGround: "linear-gradient(180deg, #bb67ff 0%, #c484f3 100%)",
-            boxShadow: "0px 10px 20px 0px #e0c6f5",
-          },
-          barValue: 70,
-          value: "25,970",
-          series: [
-            {
-              name: "Sales",
-              data: [31, 40, 28, 51, 42, 109, 100],
-            },
-          ],
-        },
-        {
-          title: "Revenue",
-          color: {
-            backGround: "linear-gradient(180deg, #FF919D 0%, #FC929D 100%)",
-            boxShadow: "0px 10px 20px 0px #FDC0C7",
-          },
-          barValue: 80,
-          value: "14,270",
-          series: [
-            {
-              name: "Revenue",
-              data: [10, 100, 50, 70, 80, 30, 40],
-            },
-          ],
-        },
-        {
-          title: "Expenses",
-          color: {
-            backGround:
-              "linear-gradient(rgb(248, 212, 154) -146.42%, rgb(255 202 113) -46.42%)",
-            boxShadow: "0px 10px 20px 0px #F9D59B",
-          },
-          barValue: 60,
-          value: "4,270",
-          series: [
-            {
-              name: "Expenses",
-              data: [10, 25, 15, 30, 12, 15, 20],
-            },
-          ],
-        },
-      ];
+    useEffect(()=>{
+      getTokens();
+    }, [])
+
+    useEffect(()=>{
+      getData();
+    },[tokens]);
+
+
+    const getData = async()=>{
+      var sum = 0;
+      Object.keys(tokens).map((token, i)=>{
+        sum = sum + tokens[token];
+      })
+      Object.keys(tokens).map((token, i)=>{
+        var data = 
+          {
+            title: token,
+            barValue: (tokens[token]/sum)*100,
+            value: tokens[token]
+          } 
+          console.log("dodo=>" ,data);
+
+          setCardsData(cardsData => [...cardsData,data])
+
+          // cardsData.push(data); 
+          console.log(cardsData);
+      })
+    }
 
   return (
     <div className="Cards">
       {cardsData.map((card, id) => {
+        
         return (
           <div className="parentContainer" key={id}>
             <Card
               title={card.title}
-              color={card.color}
               barValue={card.barValue}
               value={card.value}
               series={card.series}

@@ -5,22 +5,16 @@ import "./Card.css";
 
 
 const Card = (props) => (
-  <div className="CompactCard"
-  // style={{
-  //   background: props.color.backGround,
-  //   boxShadow: props.color.boxShadow,
-  // }}
-  >
+  <div className="CompactCard">
      <div className="radialBar">
         <CircularProgressbar
           value={props.barValue}
-         
+          text={props.barValue}
         />
-        <span>{props.title}</span>
       </div>
       <div className="detail">
-        <span>${props.value}</span>
-        <span>Last 24 hours</span>
+        <span>{props.value}</span>
+        <span>{props.title}</span>
       </div>
   </div>
 )

@@ -28,14 +28,13 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 export const Home = ()=>{
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmall = useMediaQuery(theme.breakpoints.down('lg'));
   return (
-    <div className='MainDash'>
+    <Box className='MainDash'>
         <h1>Overview</h1>
         <Cards />
-  
         <Box sx={{ width: '100%' }}>
-          <Grid container rowSpacing={1} columnSpacing={{md:3 }}>
+          <Grid container rowSpacing={1} columnSpacing={{md:1 }}>
               <Grid item xs={isSmall ? 12 : 8}>  
                 <Table />        
               </Grid>
@@ -44,9 +43,6 @@ export const Home = ()=>{
               </Grid>
           </Grid>
         </Box> 
-            {/* </div>
-        </div> */}
-        
-    </div>
+    </Box>
   )
 }
