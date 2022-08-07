@@ -1,16 +1,19 @@
 import { CircularProgressbar } from "react-circular-progressbar";
 import React from 'react';
 import "./Card.css";
-
+import CircularProgress from "../CircularProgress/CircularProgress";
 
 
 const Card = (props) => (
   <div className="CompactCard">
      <div className="radialBar">
-        <CircularProgressbar
-          value={props.barValue}
-          text={props.barValue}
-        />
+
+        <CircularProgress
+        size={100}
+        strokeWidth={10}
+        percentage={props.barValue}
+        color="white"
+      />
       </div>
       <div className="detail">
         <span>{props.value}</span>

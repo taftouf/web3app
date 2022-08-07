@@ -54,7 +54,7 @@ export const Cards = () => {
         var data = 
           {
             title: token,
-            barValue: (tokens[token]/sum)*100,
+            barValue: Math.trunc((tokens[token]/sum)*100),
             value: tokens[token]
           } 
           console.log("dodo=>" ,data);
