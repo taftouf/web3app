@@ -2,7 +2,6 @@ import * as React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { Home } from "./pages/home";
 import { Login } from "./pages/login";
-import { IntegrationDetails } from "./pages/integrationDetails"
 import Private from "./middlewares/private";
 import Public from "./middlewares/public";
 import { useDispatch } from "react-redux";
@@ -12,7 +11,7 @@ import { Payments } from "./pages/payment";
 import {Integrations} from "./pages/integration";
 import connector from "./providers";
 import { ethers } from "ethers";
-
+import { Documentation } from "./pages/documentation";
 function App() {  
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -48,9 +47,8 @@ function App() {
         <Route path="home" element={ <Private> <Home /> </Private>} />
         <Route path="payments" element={ <Private> <Payments /> </Private>} />
         <Route path="integrations" element={ <Private> <Integrations /> </Private>} />
-        <Route path="integration" element={ <Private> <IntegrationDetails /> </Private>} />
+        <Route path="documentation" element={ <Private> <Documentation /> </Private>} />
       </Route>
-      
     </Routes>
   );
 }

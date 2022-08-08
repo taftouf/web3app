@@ -9,16 +9,6 @@ import Paper from "@mui/material/Paper";
 import "./Table.css";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-// function createData(Tx, Token, date, status) {
-//   return { Tx, Token, date, status };
-// }
-
-// const rows = [
-//   createData("0xc778417e063141139fce010982780140aa0cd5ab", 'Link', "02/02/2022", "Approved"),
-//   createData("0xc778417e063141139fce010982780140aa0cd5ab", 'USDC', "02/02/2022", "Cancelled"),
-//   createData("0xc778417e063141139fce010982780140aa0cd5ab", 'Eth', "02/02/2022", "Approved"),
-//   createData("0xc778417e063141139fce010982780140aa0cd5ab", 'Eth', "02/02/2022", "Cancelled"),
-// ];
 
 
 const makeStyle=(status)=>{

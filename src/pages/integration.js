@@ -25,7 +25,19 @@ import { IconButton} from '@mui/material';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import Snackbar from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
-
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import "../componets/Table/Table.css";
+import DetailsIcon from '@mui/icons-material/Details';
+import EditIcon from '@mui/icons-material/Edit';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
@@ -73,7 +85,44 @@ const useStyles = makeStyles(theme => ({
         },
         cursor: 'pointer',
     }
-  }));
+}));
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+'& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+},
+'& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+},
+}));
+const BootstrapDialogTitle = (props) => {
+    const { children, onClose, ...other } = props;
+  
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+};
+  
+BootstrapDialogTitle.propTypes = {
+    children: PropTypes.node,
+    onClose: PropTypes.func.isRequired,
+};
 
 export const Integrations=()=>{
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
@@ -91,8 +140,10 @@ export const Integrations=()=>{
     const [openAdd, setOpenAdd] = useState(false);
     const [openUpdate, setOpenUpdate] = useState(false);
     const [openDelete, setopenDelete] = useState(false);
-
-
+    const [openDetail, setOpenDetails] = useState(false);
+    const [updateName, setUpdateName] = useState("");
+    const [updateAddress, setUpdateAddress] = useState("");
+    const [id, setId] = useState("");
     const columns = [
         {field: "id", hide: true},
         {
@@ -134,27 +185,24 @@ export const Integrations=()=>{
 
       const deleteIntegration = async() =>{
         if(del){
-            const selectedIDs = new Set(selectionModel);
-            selectedIDs.forEach( async id => {
-                const requestOptions = {
-                    method: 'delete',
-                    headers: { 
-                        'Content-Type': 'application/json' ,
-                        'Accept': 'application/json',
-                        'Authorization': token,
-                        '_id': id
-                    }
-                };
-                await fetch('http://127.0.0.1:8000/api/integration/'+id+'/delete', requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                    setRow((r) => r.filter((x) => !selectedIDs.has(x.id)));
-                    setopenDelete(true);
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-            }) 
+            const requestOptions = {
+                method: 'delete',
+                headers: { 
+                    'Content-Type': 'application/json' ,
+                    'Accept': 'application/json',
+                    'Authorization': token,
+                    '_id': id
+                }
+            };
+            await fetch('http://127.0.0.1:8000/api/integration/'+id+'/delete', requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                setRow((r) => r.filter(function(el) { return el.id != id }));
+                setopenDelete(true);
+            })
+            .catch(err => {
+                console.log(err);
+            });
         }
       }
       
@@ -171,7 +219,7 @@ export const Integrations=()=>{
         await fetch('http://127.0.0.1:8000/api/integrations', requestOptions)
         .then(response => response.json())
         .then(data => {
-            console.log(token);
+            setRow([]);
             data['integration'].map((integration,i)=>{
                 setRow(rows => [...rows, { id :integration._id.$oid ,key:integration?.key, name: integration.name, receiver: integration.receiver }]);
             });
@@ -216,27 +264,24 @@ export const Integrations=()=>{
         
     }
 
-    const processRowUpdate = async(newRow) => {
-        const updatedRow = { ...newRow, isNew: false };
+    const Update = async() => {
         const requestOptions = {
             method: 'get',
             headers: { 
                 'Content-Type': 'application/json' ,
                 'Accept': 'application/json',
                 'Authorization': token,
-                'receiver': updatedRow.receiver,
-                'name': updatedRow.name,
-                '_id': updatedRow.id
+                'receiver': updateAddress,
+                'name': updateName,
+                '_id': id
             }
         };
-        await fetch('http://127.0.0.1:8000/api/integration/'+updatedRow.id+'/update', requestOptions)
+        await fetch('http://127.0.0.1:8000/api/integration/'+id+'/update', requestOptions)
         .then(response => response.json())
-        .then(data => setOpenUpdate(true))
+        .then(data => {getIntegration();setOpenUpdate(true)})
         .catch(err => console.log(err));
     };
-    const onProcessRowUpdateError=()=>{
-        console.log("")
-    }
+
 
     const actionAdd = (
         <React.Fragment>
@@ -297,6 +342,7 @@ export const Integrations=()=>{
 
     return (
         <>
+        <h1>Integrations</h1>
             <Card elevation={4} sx={{ minWidth: 275 , background: 'white'}}>
                 <CardContent>
                     <Button
@@ -353,33 +399,54 @@ export const Integrations=()=>{
                     }
                 }
             }>
-                <DialogTitle>Delete {selectionModel.length} Integrations</DialogTitle>
+                <DialogTitle>Delete Integration</DialogTitle>
                 <DialogActions>
-                    <Button startIcon={<DeleteOutlinedIcon />} onClick={async()=>{setDel(true); setOpenDel(false)}}>Delete</Button>
+                    <Button sx={{color:"red"}} startIcon={<DeleteOutlinedIcon />} onClick={async()=>{setDel(true); setOpenDel(false)}}>Delete</Button>
                     <Button startIcon={<CancelOutlinedIcon />} onClick={async()=>{setDel(false); setOpenDel(false)}}>cancel</Button>
                 </DialogActions>
             </Dialog>
 
-            <Card elevation={4} sx={{background:'white', mt:2}}>
-                <CardContent>
-                    <Box sx={{ height: 371, width: '100%'}}>
-                        <DataGrid
-                            editMode="row"
-                            onProcessRowUpdateError={onProcessRowUpdateError}
-                            processRowUpdate={processRowUpdate}
-                            experimentalFeatures={{ newEditingApi: true }}
-                            rows={rows}
-                            columns={columns}
-                            pageSize={5}
-                            rowsPerPageOptions={[3]}
-                            checkboxSelection
-                            onSelectionModelChange={(ids) => {
-                                setSelectionModel(ids);
-                              }}
-                        />
-                    </Box>
-                </CardContent>
-            </Card>
+            
+            <Box sx={{ mt:4,height: 371, width: '100%'}}>  
+                <TableContainer
+                component={Paper}
+                style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
+                >
+                    <Table sx={{ minWidth: 550 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell align="left">Reaciver</TableCell>
+                                <TableCell align="left">Integration Key</TableCell>
+                                <TableCell align="left"> Actions </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody style={{ color: "white" }}>
+                        {rows.map((row, i) => (
+                            <TableRow
+                            key={i}
+                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                            >
+                            <TableCell component="th" scope="row">
+                                {row.name}
+                            </TableCell>
+                            <TableCell component="th" align="left">{row.receiver}</TableCell>
+                            <TableCell component="th" align="left">{row.key}</TableCell>
+                            <TableCell component="th" scope="row">
+                                <IconButton onClick={()=>{setUpdateAddress(row.receiver);setUpdateName(row.name);setId(row.id);setOpenDetails(true)}} aria-label="delete" sx={{color:"grey"}}>
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton onClick={()=>{setId(row.id); setOpenDel(true)}} aria-label="delete" sx={{color:"red"}}>
+                                    <DeleteOutlinedIcon />
+                                </IconButton>
+                            </TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+                
 
             <Snackbar
                 open={openUpdate}
@@ -428,7 +495,48 @@ export const Integrations=()=>{
                 message="Integration deleted successfuly"
                 action={actionDelete}
             />
-
+            <BootstrapDialog
+                onClose={()=>{setOpenDetails(false)}}
+                aria-labelledby="customized-dialog-title"
+                open={openDetail}
+            >
+                <BootstrapDialogTitle id="customized-dialog-title" onClose={()=>{setOpenDetails(false)}}>
+                Update Integration
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                <TextField
+                    gutterBottom
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="Name"
+                    type="email"
+                    value={updateName}
+                    fullWidth
+                    onChange={(e) => {
+                        setUpdateName(e.target.value);
+                    }}
+                />
+                <TextField
+                    gutterBottom
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="Name"
+                    type="email"
+                    value={updateAddress}
+                    fullWidth
+                    onChange={(e) => {
+                        setUpdateAddress(e.target.value);
+                    }}
+                />
+                </DialogContent>
+                <DialogActions>
+                <Button autoFocus onClick={()=>{Update();setOpenDetails(false)}}>
+                    Save changes
+                </Button>
+                </DialogActions>
+            </BootstrapDialog>
         </>
     )
 }
