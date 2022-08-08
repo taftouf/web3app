@@ -9,6 +9,7 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { RightSide } from '../componets/RightSide/RightSide'
+import { CardsHome } from '../componets/Cards/CardsHome';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -22,7 +23,7 @@ export const Home = ()=>{
   return (
     <Box className='MainDash'>
         <h1>Overview</h1>
-        <Cards />
+        <CardsHome />
         <Box sx={{ width: '100%' }}>
           <Grid container rowSpacing={1} columnSpacing={{md:1 }}>
               <Grid item xs={isSmall ? 12 : 8}>  

@@ -1,20 +1,17 @@
 import React from 'react';
 import './Cards.css';
 import Card from '../Card/Card';
-import Grid from '@mui/material/Grid';
-import { theme } from '../../componets/theme';
 import { useEffect, useState } from 'react';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useSelector } from "react-redux";
 
 
 
-export const Cards = () => {
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+export const Cards = (props) => {
   const [tokens, setTokens] = useState([]);
   const address = useSelector((state)=>state.account.address);
   const token = useSelector((state)=>state.account.token_type)+" "+useSelector((state)=>state.account.access_token);
   const [cardsData, setCardsData] = useState([]);
+  
   const getTokens = async()=>{
       const requestOptions = {
         method: 'GET',
@@ -24,16 +21,16 @@ export const Cards = () => {
             'Authorization': token,
             'owner': address
         },
-    };
-    await fetch('http://127.0.0.1:8000/api/tokenIn/owner', requestOptions)
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        setTokens(data['token']);
-    })
-    .catch(err => {
-        console.log("error test");
-    });
+      };
+      await fetch('http://127.0.0.1:8000/api/tokenIn/owner', requestOptions)
+      .then(response => response.json())
+      .then(data => {
+          console.log(data);
+          setTokens(data['token']);
+      })
+      .catch(err => {
+          console.log("error test");
+      });
     }
 
     useEffect(()=>{

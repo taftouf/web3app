@@ -38,15 +38,6 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const successStyles = {
-  borderColor: '#22bb33',
-  border: 1,
-};
-
-const failedStyles = {
-  borderColor: '#22bb33',
-  border: 1,
-};
 
 export const Payments=()=>{
 
@@ -55,12 +46,12 @@ export const Payments=()=>{
     const address = useSelector((state)=>state.account.address);
     const token = useSelector((state)=>state.account.token_type)+" "+useSelector((state)=>state.account.access_token);
     const [openDelete, setopenDelete] = useState(false);
-    const [selectionModel, setSelectionModel] = useState([]);
     const [openDel, setOpenDel] = useState(false);
     const [del, setDel] = useState(false);
     const [open, setOpen] = useState(false);
     const [id, setId] = useState("");
 
+    
 
       const columns = [
         {field: "id", hide: true},
@@ -209,7 +200,7 @@ export const Payments=()=>{
     <>
     <Box className='MainDash'>
         <h1>Payments</h1>
-        <Cards />
+        <Cards route={'payment'}/>
         <Box sx={{ width: '100%' }}>
           <Grid container rowSpacing={1} columnSpacing={{md:1 }}>
               <Grid item xs={12}>  
@@ -217,14 +208,13 @@ export const Payments=()=>{
                 <CardContent>
                     <Box sx={{ height: 371, width: '100%'}}>
                         <DataGrid
-                            experimentalFeatures={{ newEditingApi: true }}
                             rows={rows}
                             columns={columns}
                             pageSize={5}
                             rowsPerPageOptions={[3]}
-                            onSelectionModelChange={(ids) => {
-                                setSelectionModel(ids);
-                              }}
+                            disableSelectionOnClick
+                            rowsHoverHighlight={false}
+                            
                         />
                     </Box>
                 </CardContent>
